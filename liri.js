@@ -1,31 +1,22 @@
+//variable to require fs, request, twitter, node
+var fs = require("fs");
 var request = require('request');
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 
-// //Grabs the twitter key variable in js file
-var myTwitterKeys = require("./keys.js");
-
-
+//sets variable to be used for switch call 
 var action = process.argv[2];
 
+// //Grabs the twitter & spotify keys  in js file
+var myTwitterKeys = require("./keys.js");
+var mySpotifyKeys = require("./keys.js")
+
 // //Gets all of twitterKeys from the keys file
-var keyList = myTwitterKeys.twitterKeys;
+var twitterKeyList = myTwitterKeys.twitterKeys;
+var spotifyKeyList = mySpotifyKeys.spotifyKeys;
 
-    for (var key in keyList){
-        var client = new Twitter({
-            consumer_key:'YkqGz1EGYZPW2DWiQcg7fWNfx',
-            consumer_secret:'7HpD8Oh3EXiZ3wQLHaQCxtwfj2Ohtv8Bl0DoR3Lfi7uWaT6LH9',
-            access_token_key:'891422639461470214-HnBU5PbIKhewoGG7nPjgf9iC3vgceKv',
-            access_token_secret:'4KXWcStVnfnnK2OCFszntKmMhauYhjOUlsoVV2erMoHtx'
-        });
-// console.log(key+":  " + keyList[key])
-    }
-
-
-var spotify = new Spotify({
-    id: 'ec633d8ec4124d7a82be53903161c157',
-    secret: '551d2db612ad4c98b3ec9efcd0696342',
-    });
+var client = new Twitter(twitterKeyList);
+var spotify = new Spotify(spotifyKeyList);
 
 switch (action) {
   case "my-tweets":
@@ -33,24 +24,26 @@ switch (action) {
     break;
 
   case "spotify-this-song":
+    var song = '';
+    song = process.argv[3];
     spotifyLog();
     break;
 
   case "movie-this":
+    var movieName = process.argv[3]
     movieLog();
     break;
 
-  case "lotto":
-    lotto();
+  case "do-what-it-says":
+    sayLog();
+    spotifyLog();
     break;
 }
-
 
 function twitterLog(){
     var params = {screen_name: 'nodeitup', count: 20};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         if (!error) {
-            // console.log(tweets);
             for (i=0; i<tweets.length; i++){
             console.log("Tweet: " + tweets[i].text);
             console.log("Created On: " + tweets[i].created_at);
@@ -63,8 +56,6 @@ function twitterLog(){
 }
 
 function spotifyLog (){
-    var song = '';
-    song = process.argv[3];
     spotify.search({ type: 'track', query: song }, function(err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
@@ -74,24 +65,15 @@ function spotifyLog (){
                          console.log("Song Name: " + songInfo.name)
                          console.log("Preview Url: " + songInfo.preview_url)
                          console.log("Album Name: " + songInfo.album.name)                
-        console.log(songResult);
         } 
     });
 }
 
 function movieLog(){
-    var movieName = process.argv[3]
-// TODO Grab the request package...
-// @link https://www.npmjs.com/package/request
-
-// Run the request function..
-// The request function takes in a URL then returns three arguments:
-// 1. It provides an error if one exists.
-// 2. It provides a response (usually that the request was successful)
-// 3. It provides the actual body text from the website <---- what actually matters.
+    // use request package to grab data from omd api
     request("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=40e9cece", function(error, response, body) {
 
-  // If the request was successful...
+    // If the request was successful...
         if (!error && response.statusCode === 200) {
 
     // Then log the body from the site!
@@ -106,3 +88,17 @@ function movieLog(){
         }
     });
 }
+
+function sayLog(){
+    //run readFile and store the read information into the variable "data"
+    fs.readFile("random.txt", "utf8", function(err, data){
+        if(err){
+            return console.log(err);
+        }
+        // console.log(data);
+        var dataArr = data.split(",")
+        console.log(dataArr[0]);
+        console.log(dataArr[1]);
+    })
+}
+    
