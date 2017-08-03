@@ -54,11 +54,14 @@ function twitterLog(){
             for (i=0; i<tweets.length; i++){
             console.log("\nTweet: " + tweets[i].text);
             console.log("Created On: " + tweets[i].created_at+ "\n");
+        
+        //append data to log.txt file
+            fs.appendFileSync('log.txt', `\nTweet: ${tweets[i].text}\n  Created On:${tweets[i].created_at}\n\n`)
             }
         } else {
             console.log(error);
         }
-    });
+    })
 
 }
 
@@ -72,7 +75,10 @@ function spotifyLog (song){
         var songResult = console.log("\nArtist(s): "+ songInfo.artists[0].name)
                          console.log("Song Name: " + songInfo.name)
                          console.log("Preview Url: " + songInfo.preview_url)
-                         console.log("Album Name: " + songInfo.album.name +"\n")                
+                         console.log("Album Name: " + songInfo.album.name +"\n") 
+
+        //append data to log.txt file
+        fs.appendFileSync('log.txt', `\nArtist(s): ${songInfo.artists[0].name}\n Song Name: ${songInfo.name}\n Preview Url: ${songInfo.preview_url}\n Album Name: ${songInfo.album.name}\n\n`)
         } 
                     
     });
@@ -95,6 +101,9 @@ function movieLog(){
             console.log("Language: " + JSON.parse(body).Language)
             console.log("Plot: " + JSON.parse(body).Plot)
             console.log("Actors: " + JSON.parse(body).Actors + "\n")
+
+        //append data to log.txt file
+        fs.appendFileSync('log.txt', `\nTitle: ${JSON.parse(body).Title}\n Released Date: ${JSON.parse(body).Released}\n IMDB Rating: ${JSON.parse(body).imdbRating}\n Rotten Tomatoes: ${JSON.parse(body).Ratings[1].Value}\n Country: ${JSON.parse(body).Country}\n Language:  ${JSON.parse(body).Language}\n Plot:  ${JSON.parse(body).Plot}\n Actors:  ${JSON.parse(body).Actors}\n\n`)
         }
     });
 }
@@ -114,4 +123,4 @@ function sayLog(){
 
     })
 }
-    
+
